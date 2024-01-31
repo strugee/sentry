@@ -1,11 +1,13 @@
 import {useCallback, useEffect, useState} from 'react';
 import styled from '@emotion/styled';
+import type HasherHelper from 'crypto-js/sha256';
 import * as qs from 'query-string';
 
 import ConfigStore from 'sentry/stores/configStore';
 import {useIsMountedRef} from 'sentry/utils/useIsMountedRef';
 
-import {imageStyle, ImageStyleProps} from './styles';
+import type {ImageStyleProps} from './styles';
+import {imageStyle} from './styles';
 
 type Props = {
   remoteSize: number;
@@ -14,8 +16,6 @@ type Props = {
   onLoad?: () => void;
   placeholder?: string;
 } & ImageStyleProps;
-
-type HasherHelper = typeof import('crypto-js/sha256');
 
 function Gravatar({
   remoteSize,

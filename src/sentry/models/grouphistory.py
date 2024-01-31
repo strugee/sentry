@@ -59,6 +59,10 @@ class GroupHistoryStatus:
     # `GroupHistoryStatus`
     NEW = 20
 
+    PRIORITY_HIGH = 21
+    PRIORITY_MEDIUM = 22
+    PRIORITY_LOW = 23
+
 
 STRING_TO_STATUS_LOOKUP = {
     "unresolved": GroupHistoryStatus.UNRESOLVED,
@@ -209,10 +213,10 @@ class GroupHistory(Model):
     class Meta:
         db_table = "sentry_grouphistory"
         app_label = "sentry"
-        index_together = (
-            ("project", "status", "release"),
-            ("group", "status"),
-            ("project", "date_added"),
+        indexes = (
+            models.Index(fields=("project", "status", "release")),
+            models.Index(fields=("group", "status")),
+            models.Index(fields=("project", "date_added")),
         )
 
     __repr__ = sane_repr("group_id", "release_id")
