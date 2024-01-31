@@ -27,7 +27,7 @@ function Gravatar({
   suggested,
 }: Props) {
   const isMountedRef = useIsMountedRef();
-  const [SHA256, setSHA256] = useState<HasherHelper>();
+  const [SHA256, setSHA256] = useState<typeof HasherHelper>();
 
   const loadSHA256Helper = useCallback(async () => {
     const mod = await import('crypto-js/sha256');
