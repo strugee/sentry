@@ -24,7 +24,6 @@ export enum MonitorStatus {
   DISABLED = 'disabled',
   ACTIVE = 'active',
   MISSED_CHECKIN = 'missed_checkin',
-  TIMEOUT = 'timeout',
 }
 
 export enum CheckInStatus {
