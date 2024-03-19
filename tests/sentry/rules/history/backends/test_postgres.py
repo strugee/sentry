@@ -31,6 +31,11 @@ class RecordTest(BasePostgresRuleHistoryBackendTest):
         assert RuleFireHistory.objects.filter(rule=rule, group=group_2).count() == 1
         assert RuleFireHistory.objects.filter(rule=rule).count() == 3
 
+    def test_returns_new_instance(self) -> None:
+        rule = Rule.objects.create(project=self.event.project)
+        new_instance = self.backend.record(rule, self.group)
+        assert new_instance is not None
+
 
 @region_silo_test
 @freeze_time()
