@@ -66,7 +66,7 @@ function GroupSimilarIssues({params}: Props) {
             ) : relatedIssues ? (
               <ul>
                 {Object.entries(relatedIssues).map(([key, values]) => (
-                  <li key={key}>{`${key}: ${values.join(', ')}`}</li>
+                  <li key={key}>{`${values.join(', ')}`}</li>
                 ))}
               </ul>
             ) : null}
