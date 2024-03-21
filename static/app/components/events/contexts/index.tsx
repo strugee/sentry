@@ -1,6 +1,11 @@
 import {Fragment, useCallback, useEffect} from 'react';
 import * as Sentry from '@sentry/react';
 
+import {CONTEXT_DOCS_LINK} from 'sentry/components/events/contextSummary/utils';
+import {EventDataSection} from 'sentry/components/events/eventDataSection';
+import {useHasNewTagsUI} from 'sentry/components/events/eventTags/util';
+import ExternalLink from 'sentry/components/links/externalLink';
+import {t, tct} from 'sentry/locale';
 import type {Group} from 'sentry/types';
 import type {Event} from 'sentry/types/event';
 import {objectIsEmpty} from 'sentry/utils';
@@ -13,6 +18,7 @@ type Props = {
 };
 
 export function EventContexts({event, group}: Props) {
+  const hasNewTagsUI = useHasNewTagsUI();
   const {user, contexts, sdk} = event;
 
   const {feedback, response, ...otherContexts} = contexts ?? {};
@@ -31,7 +37,7 @@ export function EventContexts({event, group}: Props) {
     }
   }, [usingOtel, sdk]);
 
-  return (
+  const contextContent = (
     <Fragment>
       {!objectIsEmpty(response) && (
         <Chunk
@@ -75,4 +81,20 @@ export function EventContexts({event, group}: Props) {
       ))}
     </Fragment>
   );
+
+  if (hasNewTagsUI) {
+    return (
+      <EventDataSection
+        key={'context'}
+        type={'context'}
+        title={t('Context')}
+        help={tct('The structured contexts attached to this event. [link:Learn more]', {
+          link: <ExternalLink openInNewTab href={CONTEXT_DOCS_LINK} />,
+        })}
+      >
+        {contextContent}
+      </EventDataSection>
+    );
+  }
+  return contextContent;
 }

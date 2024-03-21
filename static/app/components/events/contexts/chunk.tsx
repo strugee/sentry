@@ -1,15 +1,16 @@
 import {Fragment, useCallback, useEffect, useState} from 'react';
 
+import ContextCard from 'sentry/components/events/contexts/contextCard';
 import {EventDataSection} from 'sentry/components/events/eventDataSection';
-import {t} from 'sentry/locale';
+import {useHasNewTagsUI} from 'sentry/components/events/eventTags/util';
 import plugins from 'sentry/plugins';
 import type {Group} from 'sentry/types';
 import type {Event} from 'sentry/types/event';
-import {defined, toTitleCase} from 'sentry/utils';
+import {defined} from 'sentry/utils';
 
-import {getContextComponent, getSourcePlugin} from './utils';
+import {getContextComponent, getSourcePlugin, getTitle} from './utils';
 
-type Props = {
+export type ChunkProps = {
   alias: string;
   event: Event;
   type: string;
@@ -17,51 +18,8 @@ type Props = {
   value?: Record<string, any>;
 };
 
-function getTitle({value = {}, alias, type}: Pick<Props, 'alias' | 'type' | 'value'>) {
-  if (defined(value.title) && typeof value.title !== 'object') {
-    return value.title;
-  }
-
-  if (!defined(type)) {
-    return toTitleCase(alias);
-  }
-
-  switch (type) {
-    case 'app':
-      return t('App');
-    case 'device':
-      return t('Device');
-    case 'os':
-      return t('Operating System');
-    case 'user':
-      return t('User');
-    case 'gpu':
-      return t('Graphics Processing Unit');
-    case 'runtime':
-      return t('Runtime');
-    case 'trace':
-      return t('Trace Details');
-    case 'otel':
-      return t('OpenTelemetry');
-    case 'unity':
-      return t('Unity');
-    case 'memory_info': // Future new value for memory info
-    case 'Memory Info': // Current value for memory info
-      return t('Memory Info');
-    case 'threadpool_info': // Future new value for thread pool info
-    case 'ThreadPool Info': // Current value for thread pool info
-      return t('Thread Pool Info');
-    case 'default':
-      if (alias === 'state') {
-        return t('Application State');
-      }
-      return toTitleCase(alias);
-    default:
-      return toTitleCase(type);
-  }
-}
-
-export function Chunk({group, type, alias, value = {}, event}: Props) {
+export function Chunk({group, type, alias, value = {}, event}: ChunkProps) {
+  const hasNewTagsUI = useHasNewTagsUI();
   const [pluginLoading, setPluginLoading] = useState(false);
 
   const syncPlugin = useCallback(() => {
@@ -114,6 +72,11 @@ export function Chunk({group, type, alias, value = {}, event}: Props) {
   // this can happen if the component does not exist
   if (!ContextComponent || isObjectValueEmpty) {
     return null;
+  }
+  if (hasNewTagsUI) {
+    return (
+      <ContextCard alias={alias} event={event} type={type} group={group} value={value} />
+    );
   }
 
   return (
