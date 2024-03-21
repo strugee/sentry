@@ -437,6 +437,7 @@ const TreeValue = styled('div')`
 `;
 
 const TreeKey = styled(TreeValue)`
+  align-self: start;
   color: ${p => p.theme.gray300};
 `;
 
