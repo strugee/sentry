@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 
 import {getTitle} from 'sentry/components/events/contexts/utils';
 import Panel from 'sentry/components/panels/panel';
+import {StructuredData} from 'sentry/components/structuredEventData';
 import {space} from 'sentry/styles/space';
 import type {Group} from 'sentry/types';
 import type {Event} from 'sentry/types/event';
@@ -22,7 +23,16 @@ function ContextCard({alias, type, value = {}}: ContextCardProps) {
     return (
       <ContextContent key={i}>
         <ContextKey>{contextKey}</ContextKey>
-        <ContextValue>{contextValue}</ContextValue>
+        <ContextValue>
+          <StructuredData
+            value={contextValue}
+            withAnnotatedText={false}
+            depth={0}
+            maxDefaultDepth={0}
+            meta={{}}
+            config={{}}
+          />
+        </ContextValue>
       </ContextContent>
     );
   });
