@@ -1,6 +1,7 @@
 import {Fragment, useCallback, useEffect} from 'react';
 import * as Sentry from '@sentry/react';
 
+import ContextCard from 'sentry/components/events/contexts/contextCard';
 import {CONTEXT_DOCS_LINK} from 'sentry/components/events/contextSummary/utils';
 import {EventDataSection} from 'sentry/components/events/eventDataSection';
 import {useHasNewTagsUI} from 'sentry/components/events/eventTags/util';
@@ -37,7 +38,42 @@ export function EventContexts({event, group}: Props) {
     }
   }, [usingOtel, sdk]);
 
-  const contextContent = (
+  if (hasNewTagsUI) {
+    const orderedContext: [string, Record<string, any>][] = [
+      ['response', response],
+      ['feedback', feedback],
+      ['user', user],
+      ...Object.entries(otherContexts),
+    ];
+    // For these context keys, use 'key' as 'type' rather than 'value.type'
+    const overrideTypes = new Set(['response', 'feedback', 'user']);
+    return (
+      <EventDataSection
+        key={'context'}
+        type={'context'}
+        title={t('Context')}
+        help={tct(
+          'The structured context items attached to this event. [link:Learn more]',
+          {
+            link: <ExternalLink openInNewTab href={CONTEXT_DOCS_LINK} />,
+          }
+        )}
+      >
+        {orderedContext.map(([k, v]) => (
+          <ContextCard
+            key={k}
+            type={overrideTypes.has(k) ? k : v?.type ?? ''}
+            alias={k}
+            value={v}
+            event={event}
+            group={group}
+          />
+        ))}
+      </EventDataSection>
+    );
+  }
+
+  return (
     <Fragment>
       {!objectIsEmpty(response) && (
         <Chunk
@@ -81,20 +117,4 @@ export function EventContexts({event, group}: Props) {
       ))}
     </Fragment>
   );
-
-  if (hasNewTagsUI) {
-    return (
-      <EventDataSection
-        key={'context'}
-        type={'context'}
-        title={t('Context')}
-        help={tct('The structured contexts attached to this event. [link:Learn more]', {
-          link: <ExternalLink openInNewTab href={CONTEXT_DOCS_LINK} />,
-        })}
-      >
-        {contextContent}
-      </EventDataSection>
-    );
-  }
-  return contextContent;
 }

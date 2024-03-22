@@ -6,6 +6,7 @@ import {StructuredData} from 'sentry/components/structuredEventData';
 import {space} from 'sentry/styles/space';
 import type {Group} from 'sentry/types';
 import type {Event} from 'sentry/types/event';
+import {objectIsEmpty} from 'sentry/utils';
 
 interface ContextCardProps {
   alias: string;
@@ -16,6 +17,10 @@ interface ContextCardProps {
 }
 
 function ContextCard({alias, type, value = {}}: ContextCardProps) {
+  if (objectIsEmpty(value)) {
+    return null;
+  }
+
   const content = Object.entries(value).map(([contextKey, contextValue], i) => {
     if (contextKey === 'type') {
       return null;

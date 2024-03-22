@@ -1,8 +1,6 @@
 import {Fragment, useCallback, useEffect, useState} from 'react';
 
-import ContextCard from 'sentry/components/events/contexts/contextCard';
 import {EventDataSection} from 'sentry/components/events/eventDataSection';
-import {useHasNewTagsUI} from 'sentry/components/events/eventTags/util';
 import plugins from 'sentry/plugins';
 import type {Group} from 'sentry/types';
 import type {Event} from 'sentry/types/event';
@@ -19,7 +17,6 @@ export type ChunkProps = {
 };
 
 export function Chunk({group, type, alias, value = {}, event}: ChunkProps) {
-  const hasNewTagsUI = useHasNewTagsUI();
   const [pluginLoading, setPluginLoading] = useState(false);
 
   const syncPlugin = useCallback(() => {
@@ -72,11 +69,6 @@ export function Chunk({group, type, alias, value = {}, event}: ChunkProps) {
   // this can happen if the component does not exist
   if (!ContextComponent || isObjectValueEmpty) {
     return null;
-  }
-  if (hasNewTagsUI) {
-    return (
-      <ContextCard alias={alias} event={event} type={type} group={group} value={value} />
-    );
   }
 
   return (
