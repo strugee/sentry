@@ -2,7 +2,10 @@ import {Fragment} from 'react';
 import type {RouteComponentProps} from 'react-router';
 import styled from '@emotion/styled';
 
+// XXX: Using IssueListActions will be a bunch of work.
+// import IssueListActions from '../actions';
 import Feature from 'sentry/components/acl/feature';
+import GroupList from 'sentry/components/issues/groupList';
 import * as Layout from 'sentry/components/layouts/thirds';
 import LoadingError from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
@@ -10,14 +13,8 @@ import {t} from 'sentry/locale';
 import {space} from 'sentry/styles/space';
 import {useApiQuery} from 'sentry/utils/queryClient';
 
-// XXX: Using IssueListActions will be a bunch of work.
-// import IssueListActions from '../actions';
-
 type RouteParams = {
   groupId: string;
-  organization: {
-    features: string[];
-  };
 };
 
 type Props = RouteComponentProps<RouteParams, {}>;
@@ -29,6 +26,7 @@ type RelatedIssuesResponse = {
 function GroupSimilarIssues({params}: Props) {
   const {groupId} = params;
 
+  // Fetch the list of related issues
   const {
     isLoading,
     isError,
@@ -38,10 +36,8 @@ function GroupSimilarIssues({params}: Props) {
     staleTime: 0,
   });
 
-  // const hasRelatedIssuesFeature =
-  //   params.organization?.features.includes('related-issues') ?? false;
-
-  // if (!hasRelatedIssuesFeature) return null;
+  // XXX: We don't currently pass the organization
+  const orgSlug = 'sentry';
 
   return (
     <Feature features={['related-issues']}>
@@ -64,11 +60,18 @@ function GroupSimilarIssues({params}: Props) {
                 onRetry={refetch}
               />
             ) : relatedIssues ? (
-              <ul>
-                {Object.entries(relatedIssues).map(([key, values]) => (
-                  <li key={key}>{`${values.join(', ')}`}</li>
-                ))}
-              </ul>
+              <GroupList
+                // The issue-stats API will get the list of projects a user belongs to.
+                // If the user does not belong to any it will return an empty list.
+                endpointPath={`/organizations/${orgSlug}/issues-stats/`}
+                orgSlug={orgSlug}
+                queryParams={{groups: '15', projects: '1'}}
+                query=""
+                source="related-issues-tab"
+                renderEmptyMessage={() => <hr />}
+                renderErrorMessage={() => <hr />}
+                {...{params, location}}
+              />
             ) : null}
           </Layout.Main>
         </Layout.Body>
