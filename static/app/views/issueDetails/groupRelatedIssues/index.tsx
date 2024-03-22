@@ -61,20 +61,13 @@ function GroupSimilarIssues({params}: Props) {
               />
             ) : relatedIssues ? (
               <GroupList
-                // The issue-stats API will get the list of projects a user belongs to.
-                // If the user does not belong to any it will return an empty list.
-                // endpointPath={`/organizations/${orgSlug}/issues-stats/`}
-                // endpointPath={`/projects/${orgSlug}/earth/issues/`}
                 endpointPath={`/organizations/${orgSlug}/issues/`}
                 orgSlug={orgSlug}
-                // queryParams={{groups: '15'}}
-                // queryParams={{groups: '15', projects: '1,3'}}
                 queryParams={{query: 'issue.id:15'}}
                 query=""
                 source="related-issues-tab"
                 renderEmptyMessage={() => <hr />}
                 renderErrorMessage={() => <hr />}
-                // {...{params, location}}
               />
             ) : null}
           </Layout.Main>
