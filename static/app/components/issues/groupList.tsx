@@ -304,7 +304,10 @@ class GroupList extends Component<Props, State> {
                     <Placeholder height="3rem" />
                   </GroupPlaceholder>
                 ))
-              : groups.map(({id, project}) => {
+              : groups.map(({id}) => {
+                  const project = {
+                    slug: 'earth',
+                  };
                   const members = memberList?.hasOwnProperty(project.slug)
                     ? memberList[project.slug]
                     : undefined;
